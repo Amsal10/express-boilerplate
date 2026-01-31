@@ -39,3 +39,8 @@ prisma/migrations/
 # Misc
 .cache/
 .temp/
+
+# Sonar
+.sonar/
+.sonarqube/
+scanner-work/
