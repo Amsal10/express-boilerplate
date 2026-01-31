@@ -76,12 +76,13 @@ const createApp = (): Application => {
   app.post(
     `${config.apiPrefix}/upload`,
     upload.single('file'),
-    (req: Request & { file?: unknown }, res: Response) => {
+    (req: Request & { file?: unknown }, res: Response): void => {
       if (!req.file) {
-        return res.status(400).json({
+        res.status(400).json({
           success: false,
           message: 'No file uploaded',
         });
+        return;
       }
 
       res.status(200).json({

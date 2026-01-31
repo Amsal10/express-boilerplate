@@ -21,9 +21,9 @@ export interface PaginationResult<T> {
 
 export class PaginationUtil {
   static getPaginationOptions(query: Record<string, unknown>): PaginationOptions {
-    const page = Math.max(1, parseInt(query.page) || 1);
-    const limit = Math.min(100, Math.max(1, parseInt(query.limit) || 10));
-    const sortBy = query.sortBy || 'createdAt';
+    const page = Math.max(1, parseInt(String(query.page)) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(String(query.limit)) || 10));
+    const sortBy = String(query.sortBy || 'createdAt');
     const sortOrder = (query.sortOrder || 'desc') as 'asc' | 'desc';
 
     return { page, limit, sortBy, sortOrder };

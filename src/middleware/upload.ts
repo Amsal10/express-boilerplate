@@ -5,10 +5,6 @@ import { config } from '../config';
 import fs from 'fs';
 import { Request, Response, NextFunction } from 'express';
 
-interface FileFilterCallback {
-  (error: Error | null, acceptFile: boolean): void;
-}
-
 const storage = multer.diskStorage({
   destination: (
     _req: Express.Request,
@@ -34,7 +30,7 @@ const storage = multer.diskStorage({
   },
 });
 
-const fileFilter = (_req: Express.Request, file: Express.Multer.File, cb: FileFilterCallback) => {
+const fileFilter = (_req: Express.Request, file: Express.Multer.File, cb: any) => {
   const allowedTypes = /jpeg|jpg|png|gif|pdf|doc|docx/;
   const ext = path.extname(file.originalname).toLowerCase();
   const mimetype = allowedTypes.test(file.mimetype);
@@ -42,7 +38,7 @@ const fileFilter = (_req: Express.Request, file: Express.Multer.File, cb: FileFi
   if (mimetype && allowedTypes.test(ext)) {
     cb(null, true);
   } else {
-    cb(new AppError(400, 'Invalid file type. Only images and PDF documents are allowed.'));
+    cb(new AppError(400, 'Invalid file type. Only images and PDF documents are allowed.'), false);
   }
 };
 
@@ -59,16 +55,16 @@ export const handleUploadError = (
   _req: Request,
   res: Response,
   next: NextFunction
-) => {
+): void => {
   if (error instanceof multer.MulterError) {
     if (error.code === 'LIMIT_FILE_SIZE') {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         message: 'File size exceeds the limit',
       });
     }
     if (error.code === 'LIMIT_UNEXPECTED_FILE') {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         message: 'Unexpected field name',
       });
