@@ -1,4 +1,4 @@
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   message: string;
   data?: T;
@@ -10,12 +10,16 @@ export interface ApiResponse<T = any> {
   };
   error?: {
     code?: string;
-    details?: any;
+    details?: unknown;
   };
 }
 
 export class ResponseUtil {
-  static success<T>(data: T, message = 'Success', meta?: any): ApiResponse<T> {
+  static success<T>(
+    data: T,
+    message = 'Success',
+    meta?: Record<string, unknown> | undefined
+  ): ApiResponse<T> {
     return {
       success: true,
       message,
@@ -24,7 +28,7 @@ export class ResponseUtil {
     };
   }
 
-  static error(message = 'An error occurred', code?: string, details?: any): ApiResponse {
+  static error(message = 'An error occurred', code?: string, details?: unknown): ApiResponse {
     return {
       success: false,
       message,

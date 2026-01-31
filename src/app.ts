@@ -1,4 +1,4 @@
-import express, { Application } from 'express';
+import express, { Application, Request, Response } from 'express';
 import { corsMiddleware, helmetMiddleware } from './middleware/security';
 import { rateLimiter } from './middleware/rateLimiter';
 import { upload, handleUploadError } from './middleware/upload';
@@ -76,7 +76,7 @@ const createApp = (): Application => {
   app.post(
     `${config.apiPrefix}/upload`,
     upload.single('file'),
-    (req: any, res: any) => {
+    (req: Request & { file?: unknown }, res: Response) => {
       if (!req.file) {
         return res.status(400).json({
           success: false,

@@ -15,6 +15,7 @@
     "node": true,
     "es2022": true
   },
+  "ignorePatterns": ["dist", "node_modules", "coverage", "prisma", "*.config.js", "*.config.ts", "jest.config.js", "jest.setup.js", "src/__tests__"],
   "rules": {
     "prettier/prettier": "error",
     "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],

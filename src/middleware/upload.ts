@@ -3,9 +3,18 @@ import path from 'path';
 import { AppError } from './errorHandler';
 import { config } from '../config';
 import fs from 'fs';
+import { Request, Response, NextFunction } from 'express';
+
+interface FileFilterCallback {
+  (error: Error | null, acceptFile: boolean): void;
+}
 
 const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => {
+  destination: (
+    _req: Express.Request,
+    _file: Express.Multer.File,
+    cb: (error: Error | null, destination: string) => void
+  ) => {
     const uploadDir = config.upload.dir;
 
     if (!fs.existsSync(uploadDir)) {
@@ -14,14 +23,18 @@ const storage = multer.diskStorage({
 
     cb(null, uploadDir);
   },
-  filename: (_req, file, cb) => {
+  filename: (
+    _req: Express.Request,
+    file: Express.Multer.File,
+    cb: (error: Error | null, filename: string) => void
+  ) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
     const ext = path.extname(file.originalname);
     cb(null, `file-${uniqueSuffix}${ext}`);
   },
 });
 
-const fileFilter = (_req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+const fileFilter = (_req: Express.Request, file: Express.Multer.File, cb: FileFilterCallback) => {
   const allowedTypes = /jpeg|jpg|png|gif|pdf|doc|docx/;
   const ext = path.extname(file.originalname).toLowerCase();
   const mimetype = allowedTypes.test(file.mimetype);
@@ -41,7 +54,12 @@ export const upload = multer({
   },
 });
 
-export const handleUploadError = (error: any, _req: any, res: any, next: any) => {
+export const handleUploadError = (
+  error: Error | multer.MulterError,
+  _req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   if (error instanceof multer.MulterError) {
     if (error.code === 'LIMIT_FILE_SIZE') {
       return res.status(400).json({

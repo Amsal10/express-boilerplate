@@ -1,3 +1,5 @@
+import { Request } from 'express';
+
 export interface PaginationOptions {
   page?: number;
   limit?: number;
@@ -18,7 +20,7 @@ export interface PaginationResult<T> {
 }
 
 export class PaginationUtil {
-  static getPaginationOptions(query: any): PaginationOptions {
+  static getPaginationOptions(query: Record<string, unknown>): PaginationOptions {
     const page = Math.max(1, parseInt(query.page) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(query.limit) || 10));
     const sortBy = query.sortBy || 'createdAt';
@@ -50,11 +52,12 @@ export class PaginationUtil {
     return (page - 1) * limit;
   }
 
-  static createPaginationLinks(req: any, page: number, totalPages: number) {
+  static createPaginationLinks(req: Request, page: number, totalPages: number) {
     const baseUrl = `${req.protocol}://${req.get('host')}${req.originalUrl.split('?')[0]}`;
-    const query = new URLSearchParams(req.query);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const query = new URLSearchParams(req.query as any);
 
-    const links: any = {
+    const links: Record<string, string> = {
       first: `${baseUrl}?page=1&${query.toString()}`,
       last: `${baseUrl}?page=${totalPages}&${query.toString()}`,
     };

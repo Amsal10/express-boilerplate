@@ -91,7 +91,12 @@ class AuthService {
 
     // Send login alert email
     try {
-      await emailService.sendLoginAlertEmail(user.email, user.username, ip || 'unknown', userAgent ? `${userAgent}` : undefined);
+      await emailService.sendLoginAlertEmail(
+        user.email,
+        user.username,
+        ip || 'unknown',
+        userAgent ? `${userAgent}` : undefined
+      );
     } catch (error) {
       console.error('Failed to send login alert email:', error);
     }
@@ -178,7 +183,9 @@ class AuthService {
 
     // Don't reveal if user exists
     if (!user) {
-      return { message: 'If an account with this email exists, a password reset email has been sent.' };
+      return {
+        message: 'If an account with this email exists, a password reset email has been sent.',
+      };
     }
 
     // Generate reset token (valid for 1 hour)
@@ -201,7 +208,9 @@ class AuthService {
       console.error('Failed to send password reset email:', error);
     }
 
-    return { message: 'If an account with this email exists, a password reset email has been sent.' };
+    return {
+      message: 'If an account with this email exists, a password reset email has been sent.',
+    };
   }
 
   async resetPassword(data: ResetPasswordInput) {
@@ -265,7 +274,9 @@ class AuthService {
 
     // Don't reveal if user exists
     if (!user) {
-      return { message: 'If an account with this email exists, a verification email has been sent.' };
+      return {
+        message: 'If an account with this email exists, a verification email has been sent.',
+      };
     }
 
     if (user.isVerified) {

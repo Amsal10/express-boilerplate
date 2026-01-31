@@ -173,7 +173,11 @@ The ${config.email.fromName} Team`;
     });
   }
 
-  async sendEmailVerificationEmail(email: string, username: string, verifyToken: string): Promise<void> {
+  async sendEmailVerificationEmail(
+    email: string,
+    username: string,
+    verifyToken: string
+  ): Promise<void> {
     const verifyUrl = `${config.frontendUrl}/verify-email?token=${verifyToken}`;
 
     const html = `
@@ -277,7 +281,12 @@ The ${config.email.fromName} Team`;
     });
   }
 
-  async sendLoginAlertEmail(email: string, username: string, ip: string, location?: string): Promise<void> {
+  async sendLoginAlertEmail(
+    email: string,
+    username: string,
+    ip: string,
+    location?: string
+  ): Promise<void> {
     const loginTime = new Date().toLocaleString();
 
     const html = `

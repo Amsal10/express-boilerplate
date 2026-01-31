@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import * as os from 'os';
 import { ResponseUtil } from '../utils/response';
 import prisma from '../config/database';
 
@@ -98,8 +99,8 @@ class HealthController {
       overallStatus = overallStatus === 'healthy' ? 'degraded' : overallStatus;
     }
 
-    const cpus = require('os').cpus();
-    const cpuLoad = require('os').loadavg()[0] / cpus.length;
+    const cpus = os.cpus();
+    const cpuLoad = os.loadavg()[0] / cpus.length;
 
     health.checks.cpu.usage = Math.round(cpuLoad * 100);
 

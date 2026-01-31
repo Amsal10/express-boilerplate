@@ -168,7 +168,11 @@ router.post('/logout', authController.logout);
  *             schema:
  *               $ref: '#/components/schemas/ApiResponse'
  */
-router.post('/request-password-reset', validate(requestPasswordResetSchema), authController.requestPasswordReset);
+router.post(
+  '/request-password-reset',
+  validate(requestPasswordResetSchema),
+  authController.requestPasswordReset
+);
 
 /**
  * @swagger
@@ -269,6 +273,10 @@ router.post('/verify-email', validate(verifyEmailSchema), authController.verifyE
  *             schema:
  *               $ref: '#/components/schemas/ApiResponse'
  */
-router.post('/resend-verification-email', validate(resendVerificationSchema), authController.resendVerificationEmail);
+router.post(
+  '/resend-verification-email',
+  validate(resendVerificationSchema),
+  authController.resendVerificationEmail
+);
 
 export default router;
