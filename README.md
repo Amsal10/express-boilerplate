@@ -6,21 +6,24 @@ Production-ready Node.js/Express starter template with authentication, authoriza
 
 - 🔐 **Authentication**: JWT access token + refresh token with rotation
 - 👥 **Authorization**: Role-based access control (RBAC)
+- 📧 **Email Service**: Nodemailer with email templates (welcome, password reset, email verification, account locked, login alerts)
 - 💾 **Database**: PostgreSQL with Prisma ORM
 - 📁 **File Upload**: Multer with file validation
 - 🛡️ **Error Handling**: Centralized error handling middleware
 - ✅ **Request Validation**: Zod schemas
-- 📝 **Logging**: Winston logger
+- 📝 **Logging**: Winston logger with request tracking
 - 🚦 **Rate Limiting**: Express rate limiter
 - 📚 **API Documentation**: Swagger/OpenAPI
 - ⚙️ **Environment Configuration**: Environment variables
 - 🔒 **Security**: CORS, Helmet
-- 🧪 **Testing**: Jest + Supertest
+- 🧪 **Testing**: Jest + Supertest with code coverage
 - 🐳 **Docker**: Docker + Docker Compose
-- 💅 **Code Quality**: ESLint + Prettier + Husky
+- 💅 **Code Quality**: ESLint + Prettier + Husky + lint-staged
+- 🔍 **Code Analysis**: SonarQube/SonarCloud integration
 - 📄 **API Versioning**: Versioned API endpoints
 - 📊 **Pagination**: Built-in pagination utilities
 - 📦 **Standard Response**: Consistent API response format
+- 🆔 **Request Tracking**: Request ID middleware for distributed tracing
 
 ## Tech Stack 🛠️
 
@@ -31,7 +34,10 @@ Production-ready Node.js/Express starter template with authentication, authoriza
 - **ORM**: Prisma
 - **Validation**: Zod
 - **Logging**: Winston
+- **Email**: Nodemailer
 - **Testing**: Jest + Supertest
+- **Code Quality**: ESLint + Prettier + Husky + lint-staged
+- **Code Analysis**: SonarQube/SonarCloud
 - **Container**: Docker
 
 ## Getting Started 🚀
@@ -117,6 +123,7 @@ npm start                # Start production server
 npm run lint             # Run ESLint
 npm run lint:fix         # Fix ESLint errors
 npm run format           # Format code with Prettier
+npm run format:check     # Check code formatting
 
 # Database
 npm run prisma:generate  # Generate Prisma client
@@ -128,6 +135,9 @@ npm run prisma:seed      # Seed database
 npm test                 # Run tests
 npm run test:watch       # Run tests in watch mode
 npm run test:coverage    # Run tests with coverage
+
+# Code Analysis
+npm run sonar            # Run SonarQube/SonarCloud analysis
 ```
 
 ## API Endpoints 🔌
@@ -148,7 +158,9 @@ npm run test:coverage    # Run tests with coverage
 
 ### Health
 
-- `GET /health` - Health check endpoint
+- `GET /health` - Comprehensive health check (database, memory, CPU status)
+- `GET /health/readiness` - Kubernetes readiness probe
+- `GET /health/liveness` - Kubernetes liveness probe
 
 ### File Upload
 
@@ -161,14 +173,23 @@ npm run test:coverage    # Run tests with coverage
 NODE_ENV=development
 PORT=3000
 API_PREFIX=/api/v1
+FRONTEND_URL=http://localhost:3000
 
 # Database
 DATABASE_URL="postgresql://user:password@localhost:5432/dbname"
 
 # JWT
-JWT_SECRET=your-secret-key
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
 JWT_ACCESS_EXPIRATION=15m
 JWT_REFRESH_EXPIRATION=7d
+
+# Email Configuration (Gmail Example)
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASSWORD=your-app-password
+EMAIL_FROM=noreply@example.com
+EMAIL_FROM_NAME=Express Boilerplate
 
 # File Upload
 MAX_FILE_SIZE=10485760
@@ -212,6 +233,47 @@ docker run -p 3000:3000 express-boilerplate
 - Password hashing with bcrypt
 - Input validation with Zod
 - File upload validation
+- Request ID tracking for audit trails
+
+## Email Service 📧
+
+The application includes a comprehensive email service with pre-built email templates:
+
+### Available Email Templates
+
+1. **Welcome Email**: Sent when a new user registers
+2. **Email Verification**: Sent to verify user email address
+3. **Password Reset**: Sent when user requests password reset
+4. **Account Locked**: Sent when user account is locked
+5. **Login Alert**: Sent when new login is detected
+
+### Email Configuration
+
+Configure email service in `.env`:
+
+```env
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASSWORD=your-app-password
+EMAIL_FROM=noreply@example.com
+EMAIL_FROM_NAME=Express Boilerplate
+```
+
+### Usage Example
+
+```typescript
+import emailService from './services/email.service';
+
+// Send welcome email
+await emailService.sendWelcomeEmail('user@example.com', 'username');
+
+// Send password reset email
+await emailService.sendPasswordResetEmail('user@example.com', 'username', 'reset-token');
+
+// Send login alert
+await emailService.sendLoginAlertEmail('user@example.com', 'username', '192.168.1.1');
+```
 
 ## Error Handling 🛡️
 
@@ -226,6 +288,93 @@ The application uses centralized error handling with consistent error responses:
     "details": {}
   }
 }
+```
+
+## Request Tracking 🆔
+
+Every request is assigned a unique Request ID for distributed tracing and debugging:
+
+- Automatically generates UUID for each request
+- Includes `X-Request-ID` header in responses
+- Logs request ID with all log entries
+- Supports external request ID via `X-Request-ID` header
+
+## Code Quality & Analysis 🔍
+
+### Pre-commit Hooks
+
+The project uses Husky and lint-staged to ensure code quality before commits:
+
+- ESLint for code linting
+- Prettier for code formatting
+- Automatically runs on every commit
+
+### SonarQube/SonarCloud Integration
+
+The project includes SonarCloud integration for code quality analysis:
+
+```bash
+# Run SonarQube analysis
+npm run sonar
+```
+
+SonarCloud analyzes your code for:
+- Code smells
+- Bugs
+- Vulnerabilities
+- Code coverage
+- Security hotspots
+- Duplications
+
+Configure SonarCloud in `sonar-project.properties`:
+```properties
+sonar.projectKey=your-project-key
+sonar.organization=your-organization
+sonar.sources=src
+sonar.tests=src/__tests__
+sonar.javascript.lcov.reportPaths=coverage/lcov.info
+```
+
+## Utilities & Helpers 🛠️
+
+### Pagination Utility
+
+Built-in pagination utility for handling large datasets:
+
+```typescript
+import { paginate } from './utils/pagination';
+
+const result = await paginate({
+  model: userModel,
+  page: 1,
+  limit: 10,
+  where: { status: 'active' },
+  orderBy: { createdAt: 'desc' }
+});
+```
+
+### Response Utility
+
+Consistent API response formatting:
+
+```typescript
+import { successResponse, errorResponse } from './utils/response';
+
+// Success response
+return successResponse(res, { data: 'value' }, 200);
+
+// Error response
+return errorResponse(res, 'Error message', 400, { details: 'error' });
+```
+
+### UUID Generator
+
+Utility for generating UUIDs:
+
+```typescript
+import { generateUUID } from './utils/uuid';
+
+const id = generateUUID(); // Generates v4 UUID
 ```
 
 ## Contributing 🤝
